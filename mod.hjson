@@ -1,8 +1,8 @@
-name:"omni-cores"
-displayName:"Универсальные ядра"
-author:"DimkaSpinka"
-description:"Добавляет улучшения и технологии для всех планет"
-main: omnicore.OmniCoreMod
-version:"1.0"
-minGameVersion:"154"
-hidden:false
+name: "omni-cores"
+displayName: "Omni Cores"
+author: "DimkaSpinka"
+description: "Добавляет командные ядра НИИ, синтезаторы, электромагнитную логистику и сверхтяжёлые вооружения для всех планет."
+main: "omnicore.OmniCoresMod"
+version: "1.0"
+minGameVersion: "154"
+hidden: false
