@@ -29,7 +29,7 @@ public class LaserMatrixBlock extends Block {
         ambientSoundVolume = 0.25f;
 
         config(Point2.class, (LaserMatrixBuild build, Point2 point) -> {
-            build.tryLink(Point2.unpack(point.x, point.y));
+            build.tryLink(Point2.pack(point.x, point.y));
         });
         config(Integer.class, (LaserMatrixBuild build, Integer pos) -> {
             build.tryLink(pos);
