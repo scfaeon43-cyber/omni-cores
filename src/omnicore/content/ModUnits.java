@@ -96,8 +96,8 @@ public class ModUnits {
                     lightningColor = Color.valueOf("52ff6e");
 
                     // Звук попадания: небольшой взрыв + молнии
-                    hitSound = Sounds.spark;
-                    despawnSound = Sounds.boom;
+                    hitSound = Sounds.shootArc;
+                    despawnSound = Sounds.explosion;
 
                     collidesTeam = true;
                     healAmount = 45f;
@@ -149,7 +149,7 @@ public class ModUnits {
                 rotate = true;
                 rotateSpeed = 12f;
                 inaccuracy = 8f;
-                shootSound = Sounds.spark;
+                shootSound = Sounds.shootArc;
 
                 // 20 дуг за 0.5 секунды (30 тиков)
                 shoot = new ShootPattern() {{
@@ -270,7 +270,7 @@ struck = true;
 }
 }
 if (struck) {
-Sounds.spark.at(b.x, b.y);
+Sounds.shootArc.at(b.x, b.y);
 }
 }
 // Урон плазменными лезвиями при контакте
