@@ -484,3 +484,4 @@ requirements(Category.power, with(
 Items.copper, 2
 ));
 }};
+    }
