@@ -1,6 +1,6 @@
 package omnicore.content;
 
-import arc.*
+import arc.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
@@ -514,7 +514,6 @@ Items.copper, 2
 // 5. ТУРЕЛИ (ОМЕГА, РАСПАД, РАСПЛАВ)
 // ==========================================
 // 5.1 ОМЕГА (16x16, 10 мин постройки, 1 мин откат, 30 000 энергии + 5 000 хладагента за выстрел, импульс Паруса в бирюзе)
-import omnicore.*
 Effect omegaCharge = new Effect(40f, e -> {
             Draw.color(Color.valueOf("4df0ff"), Color.white, e.fin());
             Lines.stroke(1.2f + e.fin() * 3.5f);
