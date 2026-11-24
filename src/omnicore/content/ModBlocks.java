@@ -291,44 +291,220 @@ Items.thorium, 140,
 Items.phaseFabric, 60
 ));
 }};
-liquidSynthesizer = new GenericCrafter("liquid-synthesizer") {{
-localizedName = "Синтезатор жидкости";
-description = "Конденсирует выбранную изученную жидкость на молекулярном уровне за счёт высокого расхода электроэнергии.";
-size = 3;
-health = 650;
-hasPower = true;
-hasLiquids = true;
-liquidCapacity = 100f;
-configurable = true;
-saveConfig = true;
-consumePower(45f);
-drawer = new DrawMulti(
-new DrawRegion("-bottom"),
-new DrawCrucibleFlame() {{
-flameColor = Color.valueOf("52ff6e");
-midColor = Color.valueOf("00aa44");
-flameRad = 3.5f;
-circleSpace = 2.5f;
-flameRadiusScl = 4f;
-flameRadiusMag = 0.6f;
-circleStroke = 1.5f;
-}},
-new DrawDefault(),
-new DrawGlowRegion("-glow") {{
-color = Color.valueOf("4df0ff");
-}}
-);
-config(Liquid.class, (LiquidSynthBuild build, Liquid liq) -> build.selectedLiquid = liq);
-configClear((LiquidSynthBuild build) -> build.selectedLiquid = null);
-buildType = () -> new LiquidSynthBuild();
-requirements(Category.crafting, with(
-Items.lead, 250,
-Items.silicon, 220,
-Items.metaglass, 180,
-Items.thorium, 140,
-Items.phaseFabric, 60
-));
-}};
+        matterSynthesizer = new GenericCrafter("matter-synthesizer") {{
+            localizedName = "Синтезатор материи";
+            description = "Квантово-магнитная установка, материализующая любой изученный твёрдый ресурс из чистой энергии.";
+            size = 3;
+            health = 650;
+            hasPower = true;
+            hasItems = true;
+            itemCapacity = 20;
+            configurable = true;
+            saveConfig = true;
+
+            consumePower(45f);
+
+            drawer = new DrawMulti(
+                new DrawRegion("-bottom"),
+                new DrawCrucibleFlame() {{
+                    flameColor = Color.valueOf("4df0ff");
+                    midColor = Color.valueOf("0088ff");
+                    flameRad = 3.5f;
+                    circleSpace = 2.5f;
+                    flameRadiusScl = 4f;
+                    flameRadiusMag = 0.6f;
+                    circleStroke = 1.5f;
+                }},
+                new DrawDefault(),
+                new DrawGlowRegion("-glow") {{
+                    color = Color.valueOf("4df0ff");
+                }}
+            );
+
+            config(Item.class, (Building build, Item item) -> {
+                if (build instanceof MatterSynthBuild b) b.selectedItem = item;
+            });
+            configClear((Building build) -> {
+                if (build instanceof MatterSynthBuild b) b.selectedItem = null;
+            });
+
+            class MatterSynthBuild extends GenericCrafterBuild {
+                public @Nullable Item selectedItem = null;
+                public float craftTimer = 0f;
+
+                public float getCraftTime(Item item) {
+                    if (item == Items.copper || item == Items.lead || item == Items.sand || item == Items.scrap) return 15f;
+                    if (item == Items.coal || item == Items.graphite || item == Items.metaglass || item == Items.titanium) return 30f;
+                    if (item == Items.silicon || item == Items.plastanium || item == Items.thorium) return 45f;
+                    return 120f;
+                }
+
+                @Override
+                public void updateTile() {
+                    if (selectedItem != null && efficiency > 0f) {
+                        craftTimer += delta() * efficiency;
+                        float requiredTime = getCraftTime(selectedItem);
+                        if (craftTimer >= requiredTime) {
+                            if (items.get(selectedItem) < block.itemCapacity) {
+                                items.add(selectedItem, 1);
+                            }
+                            craftTimer = 0f;
+                        }
+                    }
+                    dump();
+                }
+
+                @Override
+                public void buildConfiguration(Table table) {
+                    ItemSelection.buildTable(block, table,
+                        Vars.content.items().select(UnlockableContent::unlockedNow),
+                        () -> selectedItem,
+                        this::configure
+                    );
+                }
+
+                @Override
+                public Object config() {
+                    return selectedItem;
+                }
+
+                @Override
+                public void draw() {
+                    super.draw();
+                    if (selectedItem != null) {
+                        Draw.z(Layer.blockOver);
+                        Draw.rect(selectedItem.uiIcon, x, y, 8f, 8f);
+                        Draw.reset();
+                    }
+                }
+
+                @Override
+                public void write(Writes write) {
+                    super.write(write);
+                    write.s(selectedItem == null ? -1 : selectedItem.id);
+                }
+
+                @Override
+                public void read(Reads read, byte revision) {
+                    super.read(read, revision);
+                    short id = read.s();
+                    selectedItem = id == -1 ? null : Vars.content.item(id);
+                }
+            }
+
+            buildType = MatterSynthBuild::new;
+
+            requirements(Category.crafting, with(
+                Items.lead, 250,
+                Items.silicon, 220,
+                Items.titanium, 180,
+                Items.thorium, 140,
+                Items.phaseFabric, 60
+            ));
+        }};
+
+        liquidSynthesizer = new GenericCrafter("liquid-synthesizer") {{
+            localizedName = "Синтезатор жидкости";
+            description = "Конденсирует выбранную изученную жидкость на молекулярном уровне за счёт высокого расхода электроэнергии.";
+            size = 3;
+            health = 650;
+            hasPower = true;
+            hasLiquids = true;
+            liquidCapacity = 100f;
+            configurable = true;
+            saveConfig = true;
+
+            consumePower(45f);
+
+            drawer = new DrawMulti(
+                new DrawRegion("-bottom"),
+                new DrawCrucibleFlame() {{
+                    flameColor = Color.valueOf("52ff6e");
+                    midColor = Color.valueOf("00aa44");
+                    flameRad = 3.5f;
+                    circleSpace = 2.5f;
+                    flameRadiusScl = 4f;
+                    flameRadiusMag = 0.6f;
+                    circleStroke = 1.5f;
+                }},
+                new DrawDefault(),
+                new DrawGlowRegion("-glow") {{
+                    color = Color.valueOf("4df0ff");
+                }}
+            );
+
+            config(Liquid.class, (Building build, Liquid liq) -> {
+                if (build instanceof LiquidSynthBuild b) b.selectedLiquid = liq;
+            });
+            configClear((Building build) -> {
+                if (build instanceof LiquidSynthBuild b) b.selectedLiquid = null;
+            });
+
+            class LiquidSynthBuild extends GenericCrafterBuild {
+                public @Nullable Liquid selectedLiquid = null;
+
+                @Override
+                public void updateTile() {
+                    if (selectedLiquid != null && efficiency > 0f) {
+                        float rate = (selectedLiquid == Liquids.water || selectedLiquid == Liquids.oil) ? 0.5f : 0.2f;
+                        float maxAdd = block.liquidCapacity - liquids.get(selectedLiquid);
+                        if (maxAdd > 0f) {
+                            liquids.add(selectedLiquid, Math.min(maxAdd, rate * delta() * efficiency));
+                        }
+                    }
+                    if (selectedLiquid != null) {
+                        dumpLiquid(selectedLiquid);
+                    }
+                }
+
+                @Override
+                public void buildConfiguration(Table table) {
+                    ItemSelection.buildTable(block, table,
+                        Vars.content.liquids().select(UnlockableContent::unlockedNow),
+                        () -> selectedLiquid,
+                        this::configure
+                    );
+                }
+
+                @Override
+                public Object config() {
+                    return selectedLiquid;
+                }
+
+                @Override
+                public void draw() {
+                    super.draw();
+                    if (selectedLiquid != null) {
+                        Draw.z(Layer.blockOver);
+                        Draw.rect(selectedLiquid.uiIcon, x, y, 8f, 8f);
+                        Draw.reset();
+                    }
+                }
+
+                @Override
+                public void write(Writes write) {
+                    super.write(write);
+                    write.s(selectedLiquid == null ? -1 : selectedLiquid.id);
+                }
+
+                @Override
+                public void read(Reads read, byte revision) {
+                    super.read(read, revision);
+                    short id = read.s();
+                    selectedLiquid = id == -1 ? null : Vars.content.liquid(id);
+                }
+            }
+
+            buildType = LiquidSynthBuild::new;
+
+            requirements(Category.crafting, with(
+                Items.lead, 250,
+                Items.silicon, 220,
+                Items.metaglass, 180,
+                Items.thorium, 140,
+                Items.phaseFabric, 60
+            ));
+        }};
 // ==========================================
 // 3. ЛОГИСТИКА И ДОБЫЧА
 // ==========================================
@@ -727,112 +903,6 @@ Items.plastanium, 120,
 Items.silicon, 150
 ));
 }};
-}
-// ==========================================
-// ВНУТРЕННИЕ КЛАССЫ СИНТЕЗАТОРОВ
-// ==========================================
-public static class MatterSynthBuild extends GenericCrafter.GenericCrafterBuild {
-public @Nullable Item selectedItem = null;
-public float craftTimer = 0f;
-public float getCraftTime(Item item) {
-if (item == Items.copper || item == Items.lead || item == Items.sand || item == Items.scrap) return 15f;
-if (item == Items.coal || item == Items.graphite || item == Items.metaglass || item == Items.titanium) return 30f;
-if (item == Items.silicon || item == Items.plastanium || item == Items.thorium) return 45f;
-return 120f;
-}
-@Override
-public void updateTile() {
-if (selectedItem != null && efficiency > 0f) {
-craftTimer += delta() * efficiency;
-float requiredTime = getCraftTime(selectedItem);
-if (craftTimer >= requiredTime) {
-if (items.get(selectedItem) < block.itemCapacity) {
-items.add(selectedItem, 1);
-}
-craftTimer = 0f;
-}
-}
-dump();
-}
-@Override
-public void buildConfiguration(Table table) {
-ItemSelection.buildTable(block, table,
-Vars.content.items().select(UnlockableContent::unlockedNow),
-() -> selectedItem,
-this::configure
-);
-}
-@Override
-public Object config() {
-return selectedItem;
-}
-@Override
-public void draw() {
-super.draw();
-if (selectedItem != null) {
-Draw.z(Layer.blockOver);
-Draw.rect(selectedItem.uiIcon, x, y, 8f, 8f);
-Draw.reset();
-}
-}
-@Override
-public void write(Writes write) {
-super.write(write);
-write.s(selectedItem == null ? -1 : selectedItem.id);
-}
-@Override
-public void read(Reads read, byte revision) {
-super.read(read, revision);
-short id = read.s();
-selectedItem = id == -1 ? null : Vars.content.item(id);
-}
-}
-public static class LiquidSynthBuild extends GenericCrafter.GenericCrafterBuild {
-public @Nullable Liquid selectedLiquid = null;
-@Override
-public void updateTile() {
-if (selectedLiquid != null && efficiency > 0f) {
-float rate = (selectedLiquid == Liquids.water || selectedLiquid == Liquids.oil) ? 0.5f : 0.2f;
-float maxAdd = block.liquidCapacity - liquids.get(selectedLiquid);
-if (maxAdd > 0f) {
-liquids.add(selectedLiquid, Math.min(maxAdd, rate * delta() * efficiency));
-}
-}
-if (selectedLiquid != null) {
-dumpLiquid(selectedLiquid);
-}
-}
-@Override
-public void buildConfiguration(Table table) {
-ItemSelection.buildTable(block, table,
-Vars.content.liquids().select(UnlockableContent::unlockedNow),
-() -> selectedLiquid,
-this::configure
-);
-}
-@Override
-public Object config() {
-return selectedLiquid;
-}
-@Override
-public void draw() {
-super.draw();
-if (selectedLiquid != null) {
-Draw.z(Layer.blockOver);
-Draw.rect(selectedLiquid.uiIcon, x, y, 8f, 8f);
-Draw.reset();
-}
-}
-@Override
-public void write(Writes write) {
-super.write(write);
-write.s(selectedLiquid == null ? -1 : selectedLiquid.id);
-}
-@Override
-public void read(Reads read, byte revision) {
-super.read(read, revision);
-short id = read.s();
-selectedLiquid = id == -1 ? null : Vars.content.liquid(id);
 }
 }
 }
