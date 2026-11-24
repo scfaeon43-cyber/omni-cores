@@ -731,7 +731,7 @@ Items.silicon, 150
 // ==========================================
 // ВНУТРЕННИЕ КЛАССЫ СИНТЕЗАТОРОВ
 // ==========================================
-public static class MatterSynthBuild extends GenericCrafterBuild {
+public static class MatterSynthBuild extends GenericCrafter.GenericCrafterBuild {
 public @Nullable Item selectedItem = null;
 public float craftTimer = 0f;
 public float getCraftTime(Item item) {
@@ -787,7 +787,7 @@ short id = read.s();
 selectedItem = id == -1 ? null : Vars.content.item(id);
 }
 }
-public static class LiquidSynthBuild extends GenericCrafterBuild {
+public static class LiquidSynthBuild extends GenericCrafter.GenericCrafterBuild {
 public @Nullable Liquid selectedLiquid = null;
 @Override
 public void updateTile() {
