@@ -1,8 +1,8 @@
-name:"silicon-upgrade"
-displayName:"Расширение кремния"
+name:"omni-cores"
+displayName:"Универсальные ядра"
 author:"DimkaSpinka"
-description:"Добавляет улучшения и технологии из кремния для всех планет"
-main: siliconupgrade.SiliconUpgradeMod
+description:"Добавляет улучшения и технологии для всех планет"
+main: omnicore.OmniCoreMod
 version:"1.0"
 minGameVersion:"154"
 hidden:false
