@@ -251,46 +251,6 @@ public class ModBlocks {
                 Items.plastanium, 50
             ));
         }};
-
-        matterSynthesizer = new GenericCrafter("matter-synthesizer") {{
-            localizedName = "Синтезатор материи";
-            description = "Квантово-магнитная установка, материализующая любой изученный твёрдый ресурс из чистой энергии.";
-            size = 3;
-            health = 650;
-            hasPower = true;
-            hasItems = true;
-            itemCapacity = 20;
-            configurable = true;
-            saveConfig = true;
-
-consumePower(45f);
-drawer = new DrawMulti(
-new DrawRegion("-bottom"),
-new DrawCrucibleFlame() {{
-flameColor = Color.valueOf("4df0ff");
-midColor = Color.valueOf("0088ff");
-flameRad = 3.5f;
-circleSpace = 2.5f;
-flameRadiusScl = 4f;
-flameRadiusMag = 0.6f;
-circleStroke = 1.5f;
-}},
-new DrawDefault(),
-new DrawGlowRegion("-glow") {{
-color = Color.valueOf("4df0ff");
-}}
-);
-config(Item.class, (MatterSynthBuild build, Item item) -> build.selectedItem = item);
-configClear((MatterSynthBuild build) -> build.selectedItem = null);
-buildType = () -> new MatterSynthBuild();
-requirements(Category.crafting, with(
-Items.lead, 250,
-Items.silicon, 220,
-Items.titanium, 180,
-Items.thorium, 140,
-Items.phaseFabric, 60
-));
-}};
         matterSynthesizer = new GenericCrafter("matter-synthesizer") {{
             localizedName = "Синтезатор материи";
             description = "Квантово-магнитная установка, материализующая любой изученный твёрдый ресурс из чистой энергии.";
@@ -320,13 +280,6 @@ Items.phaseFabric, 60
                     color = Color.valueOf("4df0ff");
                 }}
             );
-
-            config(Item.class, (Building build, Item item) -> {
-                if (build instanceof MatterSynthBuild b) b.selectedItem = item;
-            });
-            configClear((Building build) -> {
-                if (build instanceof MatterSynthBuild b) b.selectedItem = null;
-            });
 
             class MatterSynthBuild extends GenericCrafterBuild {
                 public @Nullable Item selectedItem = null;
@@ -392,6 +345,13 @@ Items.phaseFabric, 60
                 }
             }
 
+            config(Item.class, (Building build, Item item) -> {
+                if (build instanceof MatterSynthBuild b) b.selectedItem = item;
+            });
+            configClear((Building build) -> {
+                if (build instanceof MatterSynthBuild b) b.selectedItem = null;
+            });
+
             buildType = MatterSynthBuild::new;
 
             requirements(Category.crafting, with(
@@ -432,13 +392,6 @@ Items.phaseFabric, 60
                     color = Color.valueOf("4df0ff");
                 }}
             );
-
-            config(Liquid.class, (Building build, Liquid liq) -> {
-                if (build instanceof LiquidSynthBuild b) b.selectedLiquid = liq;
-            });
-            configClear((Building build) -> {
-                if (build instanceof LiquidSynthBuild b) b.selectedLiquid = null;
-            });
 
             class LiquidSynthBuild extends GenericCrafterBuild {
                 public @Nullable Liquid selectedLiquid = null;
@@ -495,6 +448,13 @@ Items.phaseFabric, 60
                 }
             }
 
+            config(Liquid.class, (Building build, Liquid liq) -> {
+                if (build instanceof LiquidSynthBuild b) b.selectedLiquid = liq;
+            });
+            configClear((Building build) -> {
+                if (build instanceof LiquidSynthBuild b) b.selectedLiquid = null;
+            });
+
             buildType = LiquidSynthBuild::new;
 
             requirements(Category.crafting, with(
@@ -505,6 +465,8 @@ Items.phaseFabric, 60
                 Items.phaseFabric, 60
             ));
         }};
+
+
 // ==========================================
 // 3. ЛОГИСТИКА И ДОБЫЧА
 // ==========================================
