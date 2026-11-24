@@ -9,7 +9,8 @@ public class ModSounds {
         neutronCharge = new Sound(),
         neutronShoot = new Sound(),
         shockSphereExplosive = new Sound(),
-        lasMatrixEmmition = new Sound();
+        lasMatrixEmmition = new Sound(),
+        decayEmmition = new Sound();
 
     public static void load() {
         protonShoot = Vars.tree.loadSound("proton-shoot");
@@ -17,5 +18,6 @@ public class ModSounds {
         neutronShoot = Vars.tree.loadSound("neutron-shoot");
         shockSphereExplosive = Vars.tree.loadSound("shock-sphere-explosive");
         lasMatrixEmmition = Vars.tree.loadSound("las-matrix-emmition");
+        decayEmmition = Vars.tree.loadSound("decay-emmition");
     }
 }
