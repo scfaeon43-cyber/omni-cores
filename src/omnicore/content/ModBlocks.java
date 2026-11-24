@@ -485,3 +485,285 @@ Items.copper, 2
 ));
 }};
     }
+// ==========================================
+        // 5. ТУРЕЛИ (ОМЕГА, РАСПАД, РАСПЛАВ)
+        // ==========================================
+
+        // 5.1 ОМЕГА (16x16, 10 мин постройки, 1 мин откат, 30 000 энергии + 5 000 хладагента, луч и звуки Паруса в бирюзе)
+        Effect omegaCharge = new Effect(40f, e -> {
+            Draw.color(Color.valueOf("4df0ff"), Color.white, e.fin());
+            Lines.stroke(1.2f + e.fin() * 3.5f);
+            for (int i = 0; i < 4; i++) {
+                float forwardOffset = -16f + i * 18f;
+                float sideOffset = 46f - i * 4f;
+                float lineLen = e.finpow() * 28f;
+                for (int side : new int[]{-1, 1}) {
+                    float startX = e.x + Angles.trnsx(e.rotation, forwardOffset) + Angles.trnsx(e.rotation + 90f * side, sideOffset);
+                    float startY = e.y + Angles.trnsy(e.rotation, forwardOffset) + Angles.trnsy(e.rotation + 90f * side, sideOffset);
+                    float slashAngle = e.rotation - 45f * side;
+                    float endX = startX + Angles.trnsx(slashAngle, lineLen);
+                    float endY = startY + Angles.trnsy(slashAngle, lineLen);
+                    Lines.line(startX, startY, endX, endY);
+                }
+            }
+        });
+
+        Effect omegaSteam = new Effect(110f, e -> {
+            Draw.color(Color.valueOf("d9f7ff"), Color.valueOf("7a8c99"), e.fin());
+            Draw.alpha(0.65f * e.fout());
+            for (int i = 0; i < 22; i++) {
+                int seed = e.id + i * 13;
+                int side = (i % 2 == 0) ? 1 : -1;
+                float alongBarrel = Mathf.randomSeed(seed, 10f, 64f);
+                float spreadSide = (18f + e.finpow() * Mathf.randomSeed(seed + 1, 20f, 40f)) * side;
+                float driftForward = alongBarrel + e.fin() * Mathf.randomSeed(seed + 2, -8f, 12f);
+                float sx = e.x + Angles.trnsx(e.rotation, driftForward) + Angles.trnsx(e.rotation + 90f, spreadSide);
+                float sy = e.y + Angles.trnsy(e.rotation, driftForward) + Angles.trnsy(e.rotation + 90f, spreadSide);
+                float radius = (3f + e.finpow() * 7.5f) * Mathf.randomSeed(seed + 3, 0.7f, 1.3f);
+                Fill.circle(sx, sy, radius);
+            }
+            Draw.reset();
+        });
+
+        Effect omegaHitFx = new Effect(24f, e -> {
+            Draw.color(Color.valueOf("4df0ff"), Color.white, e.fin());
+            Lines.stroke(2.5f * e.fout());
+            Lines.circle(e.x, e.y, e.finpow() * 24f);
+            Angles.randLenVectors(e.id, 5, 4f + e.finpow() * 20f, (x, y) -> {
+                Fill.circle(e.x + x, e.y + y, e.fout() * 2.5f);
+            });
+        });
+
+        omegaTurret = new LaserTurret("omega-turret") {{
+            localizedName = "Омега";
+            description = "Сверхтяжёлый стационарный аннигиляционный излучатель закрытого НИИ. Требует 10 минут на возведение, 30 000 энергии и 5 000 хладагента на один залп.";
+            size = 16;
+            health = 45000;
+            armor = 30f;
+            range = 1000f;
+            rotateSpeed = 0.35f;
+            shootCone = 3f;
+            recoil = 10f;
+            shake = 14f;
+            reload = 3600f;
+            shootDuration = 280f;
+            buildTime = 36000f;
+            liquidCapacity = 10000f;
+            hasLiquids = true;
+            hasPower = true;
+
+            consumePowerBuffered(30000f);
+
+            chargeSound = Sounds.chargeVela;
+            shootSound = Sounds.shootBeamPlasma;
+            loopSound = Sounds.beamPlasma;
+            loopSoundVolume = 1.4f;
+            smokeEffect = omegaSteam;
+
+            shoot = new ShootPattern() {{
+                firstShotDelay = 40f;
+            }};
+
+            shootType = new ContinuousLaserBulletType(480f) {{
+                length = 1020f;
+                width = 14f;
+                hitEffect = omegaHitFx;
+                shootEffect = omegaSteam;
+                chargeEffect = omegaCharge;
+                drawSize = 1100f;
+                incendChance = 0.6f;
+                incendSpread = 10f;
+                incendAmount = 2;
+                shake = 3f;
+                colors = new Color[]{
+                    Color.valueOf("0066cc").a(0.55f),
+                    Color.valueOf("00aaff").a(0.8f),
+                    Color.valueOf("4df0ff"),
+                    Color.white
+                };
+            }};
+
+            drawer = new DrawTurret("omega-base") {{
+                heatColor = Color.valueOf("4df0ff");
+            }};
+
+            buildType = () -> new LaserTurretBuild() {
+                @Override
+                public boolean canConsume() {
+                    return power.status >= 0.999f && liquids.get(ModLiquids.refrigerant) >= 5000f && super.canConsume();
+                }
+
+                @Override
+                protected void shoot(BulletType type) {
+                    power.status = 0f;
+                    liquids.remove(ModLiquids.refrigerant, 5000f);
+                    super.shoot(type);
+                }
+            };
+
+            requirements(Category.turret, with(
+                Items.copper, 1800,
+                Items.lead, 1600,
+                Items.graphite, 1200,
+                Items.titanium, 1000,
+                Items.thorium, 900,
+                Items.silicon, 1100,
+                Items.surgeAlloy, 650,
+                Items.phaseFabric, 400
+            ));
+        }};
+
+        // 5.2 РАСПАД (4x4, аналог Сияния с Эрекира, статус Облучение, стягивание частиц + волна каждые 2 сек, кастомный звук decay-emmition)
+        Effect decayGatherFx = new Effect(28f, e -> {
+            Draw.color(Color.valueOf("52ff6e"), Color.white, e.fin());
+            for (int i = 0; i < 6; i++) {
+                float angle = e.rotation + (i * 60f) + e.fin() * 35f;
+                float dist = 22f * e.fout();
+                float px = e.x + Angles.trnsx(angle, dist);
+                float py = e.y + Angles.trnsy(angle, dist);
+                Fill.circle(px, py, 1.8f * e.fslope());
+            }
+        });
+
+        Effect decayBeamParticleFx = new Effect(36f, e -> {
+            Draw.color(Color.valueOf("52ff6e"), Color.valueOf("a8ffb5"), e.fin());
+            float sideOffset = (1f - e.fin()) * Mathf.sin(e.id * 1.7f) * 10f;
+            float forward = e.fin() * 24f;
+            float px = e.x + Angles.trnsx(e.rotation, forward) + Angles.trnsx(e.rotation + 90f, sideOffset);
+            float py = e.y + Angles.trnsy(e.rotation, forward) + Angles.trnsy(e.rotation + 90f, sideOffset);
+            Fill.circle(px, py, 1.5f * e.fslope());
+        });
+
+        Effect decayPulseWaveFx = new Effect(45f, e -> {
+            Draw.color(Color.valueOf("52ff6e"), Color.valueOf("1b8a32"), e.fin());
+            Draw.alpha(0.55f * e.fout());
+            Lines.stroke(2.5f * e.fout());
+            Lines.circle(e.x, e.y, e.finpow() * 28f);
+            Draw.reset();
+        });
+
+        decayTurret = new ContinuousTurret("decay-turret") {{
+            localizedName = "Распад";
+            description = "Фокусированный изотопный излучатель. Непрерывно удерживает узкий зелёный луч на цели, вызывая радиационное поражение.";
+            size = 4;
+            health = 2600;
+            range = 340f;
+            rotateSpeed = 1.8f;
+            aimChangeSpeed = 1.4f;
+            shootCone = 5f;
+            recoil = 1.5f;
+            shake = 1f;
+            liquidCapacity = 40f;
+            shootSound = ModSounds.decayEmmition;
+            loopSound = ModSounds.decayEmmition;
+            loopSoundVolume = 0.85f;
+            coolantMultiplier = 2.5f;
+
+            consumePower(28f);
+            consumeCoolant(0.25f);
+
+            shootEffect = decayGatherFx;
+
+            shootType = new PointLaserBulletType() {
+                {
+                    damage = 95f;
+                    buildingDamageMultiplier = 0.4f;
+                    color = Color.valueOf("52ff6e");
+                    status = ModStatuses.irradiated;
+                    statusDuration = 240f;
+                    oscScl = 0.5f;
+                    oscMag = 0.3f;
+                    hitEffect = Fx.none;
+                    trailEffect = decayBeamParticleFx;
+                    trailChance = 0.45f;
+                }
+
+                @Override
+                public void update(Bullet b) {
+                    super.update(b);
+                    if (b.timer(0, 120f)) {
+                        decayPulseWaveFx.at(b.aimX, b.aimY);
+                    }
+                }
+            };
+
+            requirements(Category.turret, with(
+                Items.copper, 350,
+                Items.lead, 300,
+                Items.silicon, 260,
+                Items.titanium, 220,
+                Items.thorium, 180,
+                Items.plastanium, 110
+            ));
+        }};
+
+        // 5.3 РАСПЛАВ (4x4, жидкостная турель на Термониуме, звуки Цунами, статус Дефлаграция)
+        Effect rasplavShootFx = new Effect(26f, e -> {
+            Draw.color(Color.valueOf("ff003f"), Color.valueOf("ff8800"), e.fin());
+            Angles.randLenVectors(e.id, 6, 4f + e.finpow() * 28f, e.rotation, 22f, (x, y) -> {
+                Fill.circle(e.x + x, e.y + y, e.fout() * 2.8f);
+            });
+        });
+
+        Effect rasplavHitFx = new Effect(32f, e -> {
+            Draw.color(Color.valueOf("ff003f"), Color.valueOf("ffaa00"), e.fin());
+            Lines.stroke(2f * e.fout());
+            Lines.circle(e.x, e.y, e.finpow() * 18f);
+            Angles.randLenVectors(e.id + 1, 7, 3f + e.finpow() * 22f, (x, y) -> {
+                Fill.circle(e.x + x, e.y + y, e.fout() * 2.4f);
+            });
+        });
+
+        rasplavTurret = new LiquidTurret("rasplav-turret") {{
+            localizedName = "Расплав";
+            description = "Тяжёлая струйная установка на базе НИИ. Заливает цели перегретым вязким термониумом на большой дистанции, вызывая дефлаграцию.";
+            size = 4;
+            health = 2200;
+            range = 300f;
+            reload = 2.5f;@Override
+public void updateTile() {
+if (selectedLiquid != null && efficiency > 0f) {
+float rate = (selectedLiquid == Liquids.water || selectedLiquid == Liquids.oil) ? 0.5f : 0.2f;
+float maxAdd = block.liquidCapacity - liquids.get(selectedLiquid);
+if (maxAdd > 0f) {
+liquids.add(selectedLiquid, Math.min(maxAdd, rate * delta() * efficiency));
+}
+}
+if (selectedLiquid != null) {
+dumpLiquid(selectedLiquid);
+}
+}
+@Override
+public void buildConfiguration(Table table) {
+ItemSelection.buildTable(block, table,
+Vars.content.liquids().select(UnlockableContent::unlockedNow),
+() -> selectedLiquid,
+this::configure
+);
+}
+@Override
+public Object config() {
+return selectedLiquid;
+}
+@Override
+public void draw() {
+super.draw();
+if (selectedLiquid != null) {
+Draw.z(Layer.blockOver);
+Draw.rect(selectedLiquid.uiIcon, x, y, 8f, 8f);
+Draw.reset();
+}
+}
+@Override
+public void write(Writes write) {
+super.write(write);
+write.s(selectedLiquid == null ? -1 : selectedLiquid.id);
+}
+@Override
+public void read(Reads read, byte revision) {
+super.read(read, revision);
+short id = read.s();
+selectedLiquid = id == -1 ? null : Vars.content.liquid(id);
+}
+}
+}
