@@ -1,5 +1,6 @@
 package omnicore.content;
 
+import arc.*
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
@@ -346,26 +347,62 @@ Items.phaseFabric, 60
 // ==========================================
 // 3. ЛОГИСТИКА И ДОБЫЧА
 // ==========================================
-electromagneticConveyor = new StackConveyor("electromagnetic-conveyor") {{
-localizedName = "Электромагнитный конвейер";
-description = "Высокоскоростной электромагнитный конвейер, перемещающий ресурсы плотными пакетами по 50 штук. Требует 1 единицу энергии на блок.";
-size = 1;
-health = 120;
-speed = 0.14f;
-itemCapacity = 50;
-recharge = 2f;
-outputRouter = false;
-hasPower = true;
-consumesPower = true;
-conductivePower = true;
-env = Env.any;
-consumePower(1f / 60f);
-requirements(Category.distribution, with(
-Items.copper, 2,
-Items.silicon, 2,
-Items.titanium, 1
-));
-}};
+electromagneticConveyor = new StackConveyor("electromagnetic-conveyor") {
+            public TextureRegion glowRegion, edgeGlowRegion;
+
+            @Override
+            public void load() {
+                super.load();
+                glowRegion = Core.atlas.find(name + "-glow");
+                edgeGlowRegion = Core.atlas.find(name + "-edge-glow");
+            }
+
+            {
+                localizedName = "Электромагнитный конвейер";
+                description = "Высокоскоростной электромагнитный конвейер, перемещающий ресурсы плотными пакетами по 50 штук. Требует 1 единицу энергии на блок.";
+                size = 1;
+                health = 120;
+                speed = 0.14f;
+                itemCapacity = 50;
+                recharge = 2f;
+                outputRouter = false;
+                hasPower = true;
+                consumesPower = true;
+                conductivePower = true;
+                glowColor = Color.valueOf("4df0ff");
+                env = Env.any;
+
+                consumePower(1f / 60f);
+
+                buildType = () -> new StackConveyorBuild() {
+                    @Override
+                    public void draw() {
+                        super.draw();
+                        if (efficiency > 0.01f && glowRegion.found()) {
+                            Draw.z(Layer.blockOver);
+                            Draw.blend(Blending.additive);
+                            Draw.color(glowColor, (0.45f + Mathf.absin(Time.time, 6f, 0.35f)) * efficiency);
+                            Draw.rect(glowRegion, x, y, rotdeg());
+                            if (edgeGlowRegion.found()) {
+                                for (int i = 0; i < 4; i++) {
+                                    if ((blendprox & (1 << i)) == 0) {
+                                        Draw.rect(edgeGlowRegion, x, y, i * 90f);
+                                    }
+                                }
+                            }
+                            Draw.blend();
+                            Draw.reset();
+                        }
+                    }
+                };
+
+                requirements(Category.distribution, with(
+                    Items.copper, 2,
+                    Items.silicon, 2,
+                    Items.titanium, 1
+                ));
+            }
+        };
 electromagneticDrill = new Drill("electromagnetic-drill") {{
 localizedName = "Электромагнитный бур";
 description = "Мощная буровая установка с электромагнитным приводом. Требует нефть и большое количество энергии, но добывает ресурсы быстрее воздушного бура.";
