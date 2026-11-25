@@ -1,67 +1,90 @@
 package omnicore.content;
 
 import arc.*;
-import mindustry.*;
+import arc.struct.*;
 import mindustry.content.*;
 import mindustry.content.TechTree.*;
+import mindustry.ctype.*;
 import mindustry.game.EventType.*;
+import mindustry.game.*;
 import mindustry.type.*;
 
-import static mindustry.type.ItemStack.*;
-
 public class ModTechTree {
-    public static TechNode root;
+    private static final Seq<TechNode> modNodes = new Seq<>();
 
     public static void load() {
-        root = TechTree.nodeRoot("omni-cores", ModBlocks.coreHorizon, true, () -> {
-            // Ветка ядер и командных юнитов
-            TechTree.node(ModUnits.proton, () -> {});
-            TechTree.node(ModBlocks.coreZenith, () -> {
-                TechTree.node(ModUnits.electron, () -> {});
-                TechTree.node(ModBlocks.coreVoskhod, () -> {
-                    TechTree.node(ModUnits.neutron, () -> {});
-                });
-            });
+        modNodes.clear();
 
-            // Ветка ресурсов, жидкостей и производства
-            TechTree.node(ModBlocks.refrigerantCompressor, () -> {
-                TechTree.nodeProduce(ModLiquids.refrigerant, () -> {});
-                TechTree.node(ModBlocks.thermoniumMixer, () -> {
-                    TechTree.nodeProduce(ModLiquids.thermonium, () -> {});
-                });
-                TechTree.node(ModBlocks.antimatterFactory, () -> {
-                    TechTree.nodeProduce(ModItems.antimatter, () -> {});
-                });
-                TechTree.node(ModBlocks.matterSynthesizer, () -> {
-                    TechTree.node(ModBlocks.liquidSynthesizer, () -> {});
-                });
-            });
+        // Находим ванильные стартовые ядра обеих планет
+        TechNode serpuloShard = TechTree.all.find(t -> t.content == Blocks.coreShard);
+        TechNode erekirBastion = TechTree.all.find(t -> t.content == Blocks.coreBastion);
 
-            // Ветка логистики, бурения и энергетики
-            TechTree.node(ModBlocks.beamEnergyTransmitter, () -> {
-                TechTree.node(ModBlocks.electromagneticConveyor, () -> {});
-                TechTree.node(ModBlocks.electromagneticDrill, () -> {});
-                TechTree.node(ModBlocks.hydroPowerPlant, () -> {
-                    TechTree.node(ModBlocks.antimatterReactor, () -> {});
-                });
-            });
+        // Прикрепляем единую ветку мода к обоим деревьям
+        if (serpuloShard != null) buildBranch(serpuloShard);
+        if (erekirBastion != null) buildBranch(erekirBastion);
 
-            // Ветка обороны и турелей
-            TechTree.node(ModBlocks.electroMine, () -> {
-                TechTree.node(ModBlocks.laserMatrix, () -> {});
-                TechTree.node(ModBlocks.rasplavTurret, () -> {
-                    TechTree.node(ModBlocks.decayTurret, () -> {
-                        TechTree.node(ModBlocks.omegaTurret, () -> {});
-                    });
-                });
-            });
-        });
+        // Синхронизируем частичный прогресс изучения между деревьями Серпуло и Эрекира
+        Events.on(ResearchEvent.class, e -> {
+            TechNode source = modNodes.find(n -> n.content == e.content);
+            if (source == null) return;
 
-        // Подключаем ветку ко всем планетам (включая планеты из других модов, например Миданту)
-        Events.on(ContentInitEvent.class, e -> {
-            for (Planet planet : Vars.content.planets()) {
-                root.addPlanet(planet);
+            for (TechNode target : modNodes) {
+                if (target != source && target.content == e.content) {
+                    for (int i = 0; i < Math.min(source.finishedRequirements.length, target.finishedRequirements.length); i++) {
+                        target.finishedRequirements[i].amount = source.finishedRequirements[i].amount;
+                    }
+                    target.save();
+                }
             }
         });
+    }
+
+    private static void buildBranch(TechNode parent) {
+        // Корень всей ветки мода — Ядро: Восход
+        TechNode voskhod = addNode(parent, ModBlocks.coreVoskhod);
+
+        // 1. Командный юнит ядра
+        addNode(voskhod, ModUnits.proton);
+
+        // 2. Ветка ресурсов, жидкостей и производства
+        TechNode refComp = addNode(voskhod, ModBlocks.refrigerantCompressor);
+        addProduceNode(refComp, ModLiquids.refrigerant);
+
+        TechNode thermMixer = addNode(refComp, ModBlocks.thermoniumMixer);
+        addProduceNode(thermMixer, ModLiquids.thermonium);
+
+        TechNode antiFactory = addNode(refComp, ModBlocks.antimatterFactory);
+        addProduceNode(antiFactory, ModItems.antimatter);
+
+        TechNode matterSynth = addNode(refComp, ModBlocks.matterSynthesizer);
+        addNode(matterSynth, ModBlocks.liquidSynthesizer);
+
+        // 3. Ветка логистики, бурения и энергетики
+        TechNode transmitter = addNode(voskhod, ModBlocks.beamEnergyTransmitter);
+        addNode(transmitter, ModBlocks.electromagneticConveyor);
+        addNode(transmitter, ModBlocks.electromagneticDrill);
+
+        TechNode hydro = addNode(transmitter, ModBlocks.hydroPowerPlant);
+        addNode(hydro, ModBlocks.antimatterReactor);
+
+        // 4. Ветка обороны и турелей
+        TechNode mine = addNode(voskhod, ModBlocks.electroMine);
+        addNode(mine, ModBlocks.laserMatrix);
+
+        TechNode rasplav = addNode(mine, ModBlocks.rasplavTurret);
+        TechNode decay = addNode(rasplav, ModBlocks.decayTurret);
+        addNode(decay, ModBlocks.omegaTurret);
+    }
+
+    private static TechNode addNode(TechNode parent, UnlockableContent content) {
+        TechNode node = new TechNode(parent, content, content.researchRequirements());
+        modNodes.add(node);
+        return node;
+    }
+
+    private static TechNode addProduceNode(TechNode parent, UnlockableContent content) {
+        TechNode node = addNode(parent, content);
+        node.objectives.add(new Objectives.Produce(content));
+        return node;
     }
 }
