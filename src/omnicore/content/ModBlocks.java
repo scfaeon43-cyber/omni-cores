@@ -669,7 +669,7 @@ Fill.circle(e.x + x, e.y + y, e.fout() * 2.5f);
 });
 omegaTurret = new LaserTurret("omega-turret") {{
 localizedName = "Омега";
-description = "Сверхтяжёлый стационарный аннигиляционный излучатель закрытого НИИ. Требует 10 минут на возведение, 30 000 энергии и 5 000 хладагента на один залп.";
+description = "Сверхтяжёлый стационарный аннигиляционный излучатель закрытого НИИ. Требует 10 минут на возведение, 30 000 энергии на один залп.";
 size = 16;
 health = 45000;
 armor = 30f;
@@ -683,6 +683,8 @@ shootDuration = 280f;
 buildTime = 36000f;
 liquidCapacity = 10000f;
 hasLiquids = true;
+coolantMultiplier = 2f;
+consumeLiquid(ModLiquids.refrigerant, 0.5f).boost();
 hasPower = true;
 consumePowerBuffered(30000f);
 chargeSound = Sounds.chargeVela;
@@ -715,16 +717,16 @@ drawer = new DrawTurret("omega-base") {{
 heatColor = Color.valueOf("4df0ff");
 }};
 buildType = () -> new LaserTurretBuild() {
-@Override
-public boolean canConsume() {
-return power.status >= 0.999f && liquids.get(ModLiquids.refrigerant) >= 5000f && super.canConsume();
-}
-@Override
-protected void shoot(BulletType type) {
-power.status = 0f;
-liquids.remove(ModLiquids.refrigerant, 5000f);
-super.shoot(type);
-}
+    @Override
+    public boolean canConsume() {
+        return power.status >= 0.999f && super.canConsume();
+    }
+
+    @Override
+    protected void shoot(BulletType type) {
+        power.status = 0f;
+        super.shoot(type);
+    }
 };
 requirements(Category.turret, with(
 Items.copper, 1800,
