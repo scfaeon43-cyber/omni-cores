@@ -62,13 +62,8 @@ public class ModUnits {
                 rotateSpeed = 10f;
                 shootSound = ModSounds.protonShoot;
 
-                // Разгон за 5 секунд (300 тиков) -> +200% к скорострельности
-                shootWarmupSpeed = 1f / 300f;
-                minWarmup = 0f;
-                linearWarmup = true;
-
                 shoot = new ShootSpread() {{
-                    shots = 4;
+                    shots = 8;
                     spread = 22f;
                 }};
 
