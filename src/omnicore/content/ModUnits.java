@@ -54,17 +54,17 @@ public class ModUnits {
             );
 
             weapons.add(new Weapon("neutron-arc-gun") {{
-                x = 0f;
-                y = 4f;
-                mirror = false;
-                reload = 45f; // Базовый интервал, при разгоне в 3 раза чаще (+200%)
-                rotate = true;
-                rotateSpeed = 10f;
+                x = 6f;
+                y = 2f;
+                mirror = true;
+                reload = 67.5f; 
+                rotate = false;
+                baseRotation = -75f;
                 shootSound = ModSounds.protonShoot;
 
                 shoot = new ShootSpread() {{
-                    shots = 8;
-                    spread = 22f;
+                    shots = 4;
+                    spread = 10f;
                 }};
 
                 bullet = new BasicBulletType(8.5f, 12f) {{
