@@ -59,6 +59,7 @@ public class ModUnits {
                 mirror = true;
                 reload = 67.5f; 
                 rotate = false;
+                shootCone = 360f;
                 baseRotation = -75f;
                 shootSound = ModSounds.protonShoot;
 
