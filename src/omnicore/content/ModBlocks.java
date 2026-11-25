@@ -713,7 +713,7 @@ Color.valueOf("4df0ff"),
 Color.white
 };
 }};
-drawer = new DrawTurret("omega-base") {{
+drawer = new DrawTurret("omega-") {{
 heatColor = Color.valueOf("4df0ff");
 }};
 buildType = () -> new LaserTurretBuild() {
