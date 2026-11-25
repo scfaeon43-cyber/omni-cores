@@ -33,7 +33,7 @@ import static mindustry.type.ItemStack.*;
 public class ModBlocks {
     public static Block
         // Ядра и спецблоки
-        coreHorizon, coreZenith, coreVoskhod,
+        coreVoskhod,
         electroMine, laserMatrix,
         // Заводы и синтезаторы
         antimatterFactory, refrigerantCompressor, thermoniumMixer,
@@ -50,58 +50,29 @@ public class ModBlocks {
         // 1. ЯДРА И СПЕЦБЛОКИ
         // ==========================================
 
-        coreHorizon = new CoreBlock("core-horizon") {{
-            localizedName = "Ядро: Горизонт";
-            description = "Командный комплекс закрытого НИИ. Управляет штурмовым стражем «Протон».";
-            size = Blocks.coreFoundation.size;
-            health = Blocks.coreFoundation.health;
-            armor = Blocks.coreFoundation.armor;
-            itemCapacity = (int) (Blocks.coreFoundation.itemCapacity * 1.5f);
-            unitType = ModUnits.proton;
-            unitCapModifier = ((CoreBlock) Blocks.coreFoundation).unitCapModifier;
-            incinerateNonBuildable = false;
-            isFirstTier = false;
-            requiresCoreZone = true;
-            requirements(Category.effect, Blocks.coreFoundation.requirements);
-        }};
-
-        coreZenith = new CoreBlock("core-zenith") {{
-            localizedName = "Ядро: Зенит";
-            description = "Командный комплекс закрытого НИИ. Управляет штурмовым стражем «Электрон».";
-            size = Blocks.coreNucleus.size;
-            health = Blocks.coreNucleus.health;
-            armor = Blocks.coreNucleus.armor;
-            itemCapacity = (int) (Blocks.coreNucleus.itemCapacity * 1.5f);
-            unitType = ModUnits.electron;
-            unitCapModifier = ((CoreBlock) Blocks.coreNucleus).unitCapModifier;
-            incinerateNonBuildable = false;
-            isFirstTier = false;
-            requiresCoreZone = true;
-            requirements(Category.effect, Blocks.coreNucleus.requirements);
-        }};
-
         coreVoskhod = new CoreBlock("core-voskhod") {{
-            localizedName = "Ядро: Восход";
-            description = "Высший командный комплекс закрытого НИИ. Управляет тяжёлым осадным стражем «Нейтрон».";
-            size = 5;
-            health = 12000;
-            armor = 15f;
-            itemCapacity = 20000;
-            unitType = ModUnits.neutron;
-            unitCapModifier = 32;
-            incinerateNonBuildable = false;
-            isFirstTier = false;
-            requiresCoreZone = true;
-            requirements(Category.effect, with(
-                Items.copper, 3500,
-                Items.lead, 3500,
-                Items.graphite, 2500,
-                Items.silicon, 2500,
-                Items.titanium, 2000,
-                Items.thorium, 1500,
-                Items.surgeAlloy, 800
-            ));
-        }};
+    localizedName = "Ядро: Восход";
+    description = "Высший командный комплекс закрытого НИИ. Управляет штурмовым стражем «Протон».";
+    size = 7;
+    health = 12000;
+    armor = 15f;
+    itemCapacity = 20000;
+    unitType = ModUnits.proton;
+    unitCapModifier = 32;
+
+    incinerateNonBuildable = false;
+    isFirstTier = false;
+    requiresCoreZone = false;
+    shownPlanets.addAll(Planets.serpulo, Planets.erekir);
+
+    requirements(Category.effect, with(
+        Items.graphite, 2500,
+        Items.silicon, 2500,
+        Items.thorium, 1500,
+        Items.surgeAlloy, 800
+    ));
+}};
+
 
         electroMine = new ShockMine("electro-mine") {{
             localizedName = "Электромина";
