@@ -7,11 +7,7 @@ import omnicore.content.*;
 
 public class OmniCoresMod extends Mod {
 
-    public OmniCoresMod() {
-        Events.on(ClientLoadEvent.class, e -> {
-            ModSounds.load();
-        });
-    }
+    
 
     @Override
     public void loadContent() {
