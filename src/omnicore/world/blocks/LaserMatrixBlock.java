@@ -25,8 +25,8 @@ public class LaserMatrixBlock extends Block {
         hasPower = true;
         configurable = true;
         saveConfig = true;
-        ambientSound = ModSounds.lasMatrixEmmition;
-        ambientSoundVolume = 0.25f;
+        ambientSound = Sounds.loopPulse; // или Blocks.impactReactor.ambientSound
+        ambientSoundVolume = 0.5f;
 
         config(Point2.class, (LaserMatrixBuild build, Point2 point) -> {
             build.tryLink(Point2.pack(point.x, point.y));
