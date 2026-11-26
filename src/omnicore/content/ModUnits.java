@@ -61,7 +61,8 @@ public class ModUnits {
                 rotate = false;
                 shootCone = 360f;
                 baseRotation = -75f;
-                shootSound = ModSounds.protonShoot;
+                shootSound = UnitTypes.tecta.weapons.first().shootSound;
+
 
                 shoot = new ShootSpread() {{
                     shots = 4;
