@@ -100,6 +100,11 @@ public class LaserMatrixBlock extends Block {
             targetPos = otherPos;
             other.sourcePos = pos();
         }
+        @Override
+public boolean shouldAmbientSound() {
+    return efficiency > 0f; // звук играет, пока матрица запитана (или active, если у вас есть флаг активности)
+}
+
 
         @Override
         public boolean onConfigureBuildTapped(Building other) {
