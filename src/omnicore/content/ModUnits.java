@@ -38,7 +38,7 @@ public class ModUnits {
             hitSize = 18f;
             itemCapacity = 1000;
             buildSpeed = 2.8f;
-            mineSpeed = 100f; // 10 единиц в секунду
+            mineSpeed = 200f; // 10 единиц в секунду
             mineTier = 5;    // Копает любые руды
             mineWalls = true;
             buildBeamOffset = 8f;
@@ -57,16 +57,16 @@ public class ModUnits {
                 x = 6f;
                 y = 2f;
                 mirror = true;
-                reload = 67.5f; 
+                reload = 30f; 
                 rotate = false;
                 shootCone = 360f;
-                baseRotation = -75f;
+                baseRotation = -20f;
                 shootSound = UnitTypes.tecta.weapons.first().shootSound;
 
 
                 shoot = new ShootSpread() {{
-                    shots = 4;
-                    spread = 10f;
+                    shots = 10;
+                    spread = 5f;
                 }};
 
                 bullet = new BasicBulletType(8.5f, 12f) {{
