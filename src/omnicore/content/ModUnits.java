@@ -29,7 +29,7 @@ public class ModUnits {
             controller = u -> new BuilderAI();
             flying = true;
             lowAltitude = true;
-            speed = 4.6f; // Как у Гаммы
+            speed = 5.5f; // Как у Гаммы
             accel = 0.12f;
             drag = 0.05f;
             rotateSpeed = 7f;
