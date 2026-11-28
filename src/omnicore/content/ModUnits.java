@@ -65,8 +65,8 @@ public class ModUnits {
 
 
                 shoot = new ShootSpread() {{
-                    shots = 10;
-                    spread = 5f;
+                    shots = 20;
+                    spread = 10f;
                 }};
 
                 bullet = new BasicBulletType(8.5f, 12f) {{
@@ -74,8 +74,8 @@ public class ModUnits {
                     width = 6f;
                     height = 12f;
 
-                    weaveScale = 4f;
-                    weaveMag = 3.5f;
+                    weaveScale = 2f;
+                    weaveMag = 2f;
                     homingPower = 0.2f;
                     homingRange = 180f;
 
@@ -83,12 +83,12 @@ public class ModUnits {
                     backColor = Color.valueOf("52ff6e");
                     trailColor = Color.valueOf("52ff6e");
                     trailWidth = 2.2f;
-                    trailLength = 10;
+                    trailLength = 20;
 
                     // Распадается на 3 небольшие молнии в финале полёта
-                    lightning = 3;
-                    lightningLength = 7;
-                    lightningDamage = 12f;
+                    lightning = 10;
+                    lightningLength = 50;
+                    lightningDamage = 10f;
                     lightningColor = Color.valueOf("52ff6e");
 
                     // Звук попадания: небольшой взрыв + молнии
