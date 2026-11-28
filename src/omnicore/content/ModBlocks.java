@@ -34,7 +34,7 @@ public class ModBlocks {
     public static Block
         // Ядра и спецблоки
         coreVoskhod,
-        electroMine, laserMatrix,
+        electroMine,
         // Заводы и синтезаторы
         antimatterFactory, refrigerantCompressor, thermoniumMixer,
         matterSynthesizer, liquidSynthesizer,
@@ -91,22 +91,6 @@ public class ModBlocks {
                 Items.copper, 25,
                 Items.lead, 20,
                 Items.silicon, 15
-            ));
-        }};
-
-        laserMatrix = new LaserMatrixBlock("laser-matrix") {{
-            localizedName = "Конструктор лазерной матрицы";
-            description = "Периметровый излучатель закрытого НИИ. Связывается с другим таким же узлом на расстоянии до 300 клеток, формируя сверхмощный алый лазерный барьер с электрическими разрядами.";
-            size = 2;
-            health = 1200;
-            armor = 6f;
-            consumePower(12.0f);
-            requirements(Category.turret, with(
-                Items.copper, 140,
-                Items.lead, 120,
-                Items.silicon, 100,
-                Items.titanium, 85,
-                Items.plastanium, 50
             ));
         }};
 
