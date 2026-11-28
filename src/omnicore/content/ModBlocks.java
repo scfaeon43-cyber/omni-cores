@@ -26,7 +26,6 @@ import mindustry.world.blocks.production.*;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.draw.*;
 import omnicore.*;
-import omnicore.world.blocks.*;
 
 import static mindustry.type.ItemStack.*;
 
