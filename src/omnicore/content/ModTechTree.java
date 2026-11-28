@@ -69,7 +69,7 @@ public class ModTechTree {
 
         // 4. Ветка обороны и турелей
         TechNode mine = addNode(voskhod, ModBlocks.electroMine);
-        addNode(mine, ModBlocks.laserMatrix);
+        addNode(mine);
 
         TechNode rasplav = addNode(mine, ModBlocks.rasplavTurret);
         TechNode decay = addNode(rasplav, ModBlocks.decayTurret);
