@@ -47,5 +47,5 @@ Please note that all dependencies on Mindustry, Arc or its submodules **must be 
 Only use `implementation` if you want to package another Java library *with your mod*, and that library is not present in Mindustry already.
 
 --- 
-
+https://trychatgpt.ru/chat/6b0a7a18c1bbef21c8a94ba9
 *[1]* *On Linux/Mac it's `./gradlew`, but if you're using Linux I assume you know how to run executables properly anyway.* 
